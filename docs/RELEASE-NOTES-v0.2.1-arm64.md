@@ -7,7 +7,8 @@
 | 文件 | 说明 |
 |---|---|
 | `DSH-0.2.1-fix11-win-arm64.exe` | NSIS 安装包（394.5 MiB），装到 `%LOCALAPPDATA%\Programs\DeepSeek Harness`，带桌面/开始菜单快捷方式与卸载项 |
-| `DSH-0.2.1-fix11-win-arm64-portable-short-root.zip` | 免安装包（622.7 MiB），短根目录 `DSH-arm64\`，最深路径 183 字符，标准 .NET zip，解压工具兼容性最好 |
+| `DSH-0.2.1-fix11-win-arm64-portable-short-root.zip` | 免安装包（622.7 MiB），短根目录 `DSH-arm64\`，最深路径 183 字符，标准 .NET zip，**推荐** |
+| `DSH-0.2.1-fix11-win-arm64-portable.zip` | 免安装包（623.9 MiB），bsdtar 生成的另一版本，根目录 `DSH-0.2.1-fix11-win-arm64\` |
 | `SHA256SUMS.txt` | 校验和，先核对再解压 |
 
 安装器 stub 为 32 位 x86（NSIS 默认），在 ARM64 Windows 上由系统模拟执行；**装进去的程序本体是 arm64**。包未签名。
@@ -43,7 +44,8 @@ asar: 16 730 条目, 1 760 unpacked, 201.9 MiB, 可解析；unpacked 缺失 0；
 - 上游 `vcruntime140_1.dll` 是 x64，已移除，由系统 arm64 运行库接管；目标机若缺 VC++ 运行库请装 `VC_redist.arm64.exe`
 - 安装器脚本为新编写（非 electron-builder 原脚本），安装位置/快捷方式/卸载项对齐原包
 - 未做数字签名，首次运行可能触发 SmartScreen
+- 已在华为 MateBook E Go 2022 性能版（骁龙 8cx Gen 3 / 16GB）上安装成功
 
 ## 许可
 
-发行产物是对上游安装包内容的重新组装，不含上游源码；其中各第三方组件保留其原始许可（Electron/Chromium、Node.js、CPython、LibreOffice、ripgrep、sharp/libvips、koffi、sherpa-onnx/onnxruntime 及 DSH 相关包）。构建脚本见仓库 `scripts/`，MIT 授权。
+发行产物是对上游安装包内容的重新组装，不含上游源码；其中各第三方组件保留其原始许可（Electron/Chromium、Node.js、CPython、LibreOffice、ripgrep、sharp/libvips、koffi、sherpa-onnx/onnxruntime 及 DSH 相关包），详见仓库 `NOTICE`。构建脚本见 `scripts/`，MIT 授权。

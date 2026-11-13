@@ -31,13 +31,16 @@
 
 ## 下载
 
-Releases 里的资产：
+Releases（最新：**[v0.2.1-arm64](https://github.com/qxsraiy/dsh-win-arm64/releases/tag/v0.2.1-arm64)**）里的资产：
 
 | 文件 | 用途 |
 |---|---|
 | `DSH-0.2.1-fix11-win-arm64.exe` | NSIS 安装包，装到 `%LOCALAPPDATA%\Programs\DeepSeek Harness`，带快捷方式与卸载项 |
-| `DSH-0.2.1-fix11-win-arm64-portable-short-root.zip` | 免安装包（短根目录，兼容性最好），解压直接运行 `DeepSeek Harness.exe` |
+| `DSH-0.2.1-fix11-win-arm64-portable-short-root.zip` | 免安装包（**推荐**），短根目录 `DSH-arm64\`，兼容性最好，解压直接运行 `DeepSeek Harness.exe` |
+| `DSH-0.2.1-fix11-win-arm64-portable.zip` | 免安装包（另一版本，根目录 `DSH-0.2.1-fix11-win-arm64\`） |
 | `SHA256SUMS.txt` | 校验和，先核对再解压 |
+
+已在华为 MateBook E Go 2022 性能版（骁龙 8cx Gen 3 / 16GB / Windows 11 ARM64）上安装验证通过。
 
 安装器 stub 是 32 位 x86（NSIS 默认），在 ARM64 Windows 上由系统模拟执行；**装进去的程序本体是 arm64**。
 包未签名，首次运行可能触发 SmartScreen 提示。
@@ -115,6 +118,7 @@ pwsh -File .\scripts\build-arm64.ps1
 ## 许可与来源
 
 - 本仓库的构建脚本与文档：**MIT**（见 `LICENSE`）。
+- 第三方组件归属说明：见 [`NOTICE`](NOTICE)。
 - Releases 中的发行产物是**对上游安装包内容的重新组装**，不包含任何上游源代码；
   其中的第三方组件各自保留其原始许可：Electron / Chromium（MIT + 附带 `LICENSES.chromium.html`）、
   Node.js（MIT）、CPython（PSF）、LibreOffice（MPL-2.0）、ripgrep（MIT）、sharp/libvips（Apache-2.0）、
