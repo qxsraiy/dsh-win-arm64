@@ -1,0 +1,35 @@
+NOTICE
+======
+
+Scope of the MIT license
+-------------------------
+The MIT license in `LICENSE` covers the build scripts and documentation that
+live in this repository (`.js`, `.ps1`, and `.md` files authored here).
+
+Release artifacts are not original work of this repository
+-----------------------------------------------------------
+The files published under Releases are reassembled from an upstream installer
+of DeepSeek Harness 0.2.1-alpha.1 (fix11) whose original payload targets
+win-x64. This repository replaces the x64 shell and x64 native payload with
+arm64 counterparts obtained from the respective upstream projects, repacks
+`app.asar`, and rebuilds the installer. No upstream source code is included
+here.
+
+Bundled third-party components keep their own licenses, including but not
+limited to:
+
+| Component | Typical license |
+|---|---|
+| Electron / Chromium | MIT (+ `LICENSES.chromium.html` shipped inside the artifact) |
+| Node.js (bundled runtime) | MIT |
+| CPython 3.12 (bundled runtime, python-build-standalone layout) | PSF-2.0 |
+| LibreOffice (libreoffice-kit engine) | MPL-2.0 |
+| ripgrep (`@vscode/ripgrep`) | MIT |
+| sharp / libvips | Apache-2.0 / LGPL-2.1-or-later (libvips) |
+| koffi | MIT |
+| sherpa-onnx / onnxruntime | Apache-2.0 |
+| numpy, pandas, lxml, Pillow, openpyxl, python-docx, python-pptx, XlsxWriter, six, python-dateutil, tzdata, typing_extensions, et_xmlfile | BSD/MIT/Apache-2.0/HPND/PSF as published by each project |
+| DeepSeek Harness packages (`@deepseek-ai/*`) | as published by the upstream project |
+
+Before redistributing these artifacts or using them commercially, verify the
+terms that apply in your jurisdiction and to your use case.

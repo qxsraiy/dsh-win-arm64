@@ -19,12 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-This license covers the build scripts and documentation in this repository.
-Release artifacts are reassembled from an upstream installer and bundle
-third-party components (Electron/Chromium, Node.js, CPython, LibreOffice,
-ripgrep, sharp/libvips, koffi, sherpa-onnx/onnxruntime, DSH packages), each
-governed by its own license; see the "Licenses and provenance" section of
-README.md.
