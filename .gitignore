@@ -1,0 +1,22 @@
+# build outputs / downloaded payloads (never committed - binaries live in Releases)
+work/
+out/
+dl/
+nsis/
+pkg/
+pkg2/
+ziptest/
+ziptest2/
+deeptest/
+npm-cache/
+
+# original x64 installer (third-party artifact)
+*.exe
+!tools/*.ps1
+
+# node
+node_modules/
+
+# misc
+*.log
+*.part

@@ -1,0 +1,3 @@
+11cd3d5d89235729324ca502a2176ead15786abe5733348108de3f3fd724acb3  DSH-0.2.1-fix11-win-arm64-portable-short-root.zip
+5d55f54634aef18bb24e94711aec1583ac7ea00e28786c7b180e699d74d6b58f  DSH-0.2.1-fix11-win-arm64-portable.zip
+5818652c8e3bbb22d0373ec2698e7f859c280fd423c5d3f6ed8968df6962f8a2  DSH-0.2.1-fix11-win-arm64.exe
