@@ -2,8 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const TREE = 'D:/aiwork/DSHarm/work/tree';
-const orig = new Set(JSON.parse(fs.readFileSync('D:/aiwork/DSHarm/work/orig-unpacked.json', 'utf8')));
+const TREE = 'D:/aiwork/DSHarm022/work/tree';
+const orig = new Set(JSON.parse(fs.readFileSync('D:/aiwork/DSHarm022/work/orig-unpacked.json', 'utf8')));
 
 const result = new Set();
 let kept = 0, dropped = 0;
@@ -16,12 +16,9 @@ console.log('orig unpacked:', orig.size, 'kept:', kept, 'dropped (x64 removed):'
 // everything inside the arm64 platform packages, plus fresh node-pty prebuilds, stays outside the archive
 const armDirs = [
   'dsh/node_modules/@koromix/koffi-win32-arm64',
-  'dsh/node_modules/@deepseek-ai/dsh-desktop-host/node_modules/@koromix/koffi-win32-arm64',
   'dsh/node_modules/@img/sharp-win32-arm64',
   'dsh/node_modules/node-addon-require-builtin-win32-arm64-msvc',
   'dsh/node_modules/@vscode/ripgrep-win32-arm64',
-  'dsh/node_modules/@anthropic-ai/claude-agent-sdk-win32-arm64',
-  'dsh/node_modules/@openai/codex-win32-arm64',
   'dsh/node_modules/@deepseek-ai/libreoffice-kit-win32-arm64',
   'dsh/node_modules/sherpa-onnx-win-arm64',
   'dsh/node_modules/node-pty/prebuilds/win32-arm64',
@@ -40,5 +37,5 @@ for (const d of armDirs) {
   })(abs, d);
 }
 console.log('added arm64 files to unpacked set:', added, 'total:', result.size);
-fs.writeFileSync('D:/aiwork/DSHarm/work/unpacked-arm64.json', JSON.stringify([...result].sort(), null, 0));
+fs.writeFileSync('D:/aiwork/DSHarm022/work/unpacked-arm64.json', JSON.stringify([...result].sort(), null, 0));
 console.log('wrote work/unpacked-arm64.json');

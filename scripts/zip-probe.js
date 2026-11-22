@@ -1,6 +1,6 @@
 // zip-probe.js — inspect central-directory metadata of the portable zip
 const fs = require('fs');
-const p = 'D:/aiwork/DSHarm/out/DSH-0.2.1-fix11-win-arm64-portable.zip';
+const p = 'D:/aiwork/DSHarm022/out/DSH-0.2.1-fix11-win-arm64-portable.zip';
 const buf = fs.readFileSync(p);
 let eocd = -1;
 for (let i = buf.length - 22; i >= Math.max(0, buf.length - 66000); i--) {

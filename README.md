@@ -9,38 +9,47 @@
 
 ## 为什么需要重新组装
 
-上游包是 x64 发行版：Electron 主程序、内置 Node、整份 CPython、以及 8 个平台专有 npm 包（koffi、sharp、node-pty、ripgrep、sherpa-onnx、claude-agent-sdk、codex、libreoffice-kit）全是 x64。
+上游包是 x64 发行版：Electron 主程序、内置 Node、整份 CPython、以及若干平台专有 npm 包（koffi、sharp、node-pty、ripgrep、sherpa-onnx、libreoffice-kit，0.2.1 还含 claude-agent-sdk、codex）全是 x64。
 在 Windows ARM64 上靠 Prism 模拟跑 Electron 主进程会持续发热掉电，而且进程内混用 x64 `.node` 直接加载失败，因此必须按 arm64 重做整条链路。
 
 | 组件 | 处置 |
 |---|---|
-| Electron 44.0.0 外壳 | 官方 `win32-arm64` 发行版，改写图标/版本资源 |
+| Electron 44.x 外壳 | 官方 `win32-arm64` 发行版（0.2.1 → 44.0.0，0.2.2 → 44.7.0），改写图标/版本资源 |
 | `koffi` | `@koromix/koffi-win32-arm64`，且**两级副本**分别对 3.1.1 / 3.3.3 |
 | `sharp` / libvips | `@img/sharp-win32-arm64` 0.35.5 |
 | `node-pty` | 上游 `prebuilds/win32-arm64`（conpty + OpenConsole），删除 x64 `build/` |
-| `ripgrep` / `sherpa-onnx` / `claude-agent-sdk` / `codex` / `libreoffice-kit` | 各自 arm64 平台包 |
+| `ripgrep` / `sherpa-onnx` / `libreoffice-kit`（0.2.1 另含 `claude-agent-sdk` / `codex`） | 各自 arm64 平台包 |
 | 内置 Node | 24.21.0 **win-arm64** |
 | 内置 Python | CPython **3.12.16 arm64**（python-build-standalone）+ 13 个 `win_arm64` / `none-any` 轮子 |
 | `app.asar` | 按 asar 格式重新打包（含 Pickle 头、4 MiB 分块 SHA-256 integrity、unpacked 落盘） |
 | 描述符 | `runtime.json` / `desktop-runtime.json` 的 `arch` 改 arm64、文件哈希清单重算 |
 | 语音 Provider | 平台白名单补 `win32-arm64`（1 处 JS 补丁） |
 
-细节与验证证据见 [`docs/BUILD-REPORT.md`](docs/BUILD-REPORT.md)。
+细节与验证证据见 [`docs/BUILD-REPORT-0.2.2.md`](docs/BUILD-REPORT-0.2.2.md) 与 [`docs/BUILD-REPORT-0.2.1.md`](docs/BUILD-REPORT-0.2.1.md)。
 
 ---
 
 ## 下载
 
-Releases（最新：**[v0.2.1-arm64](https://github.com/qxsraiy/dsh-win-arm64/releases/tag/v0.2.1-arm64)**）里的资产：
+| Release | 上游版本 | Electron | 安装包 | 免安装包 |
+|---|---|---|---|---|
+| [**v0.2.2-rc.2-arm64**](https://github.com/qxsraiy/dsh-win-arm64/releases/tag/v0.2.2-rc.2-arm64) | DSH 0.2.2-rc.2 | 44.7.0 | 242.5 MiB | 402.6 MiB |
+| [v0.2.1-arm64](https://github.com/qxsraiy/dsh-win-arm64/releases/tag/v0.2.1-arm64) | DSH 0.2.1-fix11 | 44.0.0 | 394.5 MiB | 622.7 MiB |
 
-| 文件 | 用途 |
+每个 Release 都包含：
+
+| 资产 | 用途 |
 |---|---|
-| `DSH-0.2.1-fix11-win-arm64.exe` | NSIS 安装包，装到 `%LOCALAPPDATA%\Programs\DeepSeek Harness`，带快捷方式与卸载项 |
-| `DSH-0.2.1-fix11-win-arm64-portable-short-root.zip` | 免安装包（**推荐**），短根目录 `DSH-arm64\`，兼容性最好，解压直接运行 `DeepSeek Harness.exe` |
-| `DSH-0.2.1-fix11-win-arm64-portable.zip` | 免安装包（另一版本，根目录 `DSH-0.2.1-fix11-win-arm64\`） |
+| `DSH-<版本>-win-arm64.exe` | NSIS 安装包，装到 `%LOCALAPPDATA%\Programs\DeepSeek Harness`，带快捷方式与卸载项 |
+| `DSH-<版本>-win-arm64-portable-short-root.zip` | 免安装包（**推荐**），短根目录 `DSH-arm64\`，最深路径 183 字符，解压直接运行 `DeepSeek Harness.exe` |
 | `SHA256SUMS.txt` | 校验和，先核对再解压 |
 
-已在华为 MateBook E Go 2022 性能版（骁龙 8cx Gen 3 / 16GB / Windows 11 ARM64）上安装验证通过。
+两个版本的功能差异（都已在 arm64 上换成原生负载）：
+
+- **0.2.2-rc.2**：Electron 44.7.0；libreoffice-kit 升到 0.2.3（引擎二进制改名 `dsoffice.exe`，自带 `frame-forwarding` arm64 预编译）；pnpm 11.28.5；新增 `resources/plugins-bundled/` 与 `desktop.cordis.patch.yml` gate 层；**不再捆绑 claude/codex 外部 CLI**，因此包体从 ~394 MiB 降到 ~242 MiB。
+- **0.2.1-fix11**：Electron 44.0.0；捆绑 claude-agent-sdk 0.3.263 与 codex 0.153.4（均换成 arm64）。
+
+0.2.1-fix11 已在华为 MateBook E Go 2022 性能版（骁龙 8cx Gen 3 / 16GB / Windows 11 ARM64）上安装验证通过。
 
 安装器 stub 是 32 位 x86（NSIS 默认），在 ARM64 Windows 上由系统模拟执行；**装进去的程序本体是 arm64**。
 包未签名，首次运行可能触发 SmartScreen 提示。
@@ -49,10 +58,10 @@ Releases（最新：**[v0.2.1-arm64](https://github.com/qxsraiy/dsh-win-arm64/re
 
 ```powershell
 # 1) 核对哈希
-Get-FileHash .\DSH-0.2.1-fix11-win-arm64-portable-short-root.zip -Algorithm SHA256
+Get-FileHash .\DSH-0.2.2-rc.2-win-arm64-portable-short-root.zip -Algorithm SHA256
 
 # 2) 解压（自动挑 7-Zip / bsdtar，落到短路径并校验）
-pwsh -File .\tools\extract-portable.ps1 -Zip .\DSH-0.2.1-fix11-win-arm64-portable-short-root.zip
+pwsh -File .\tools\extract-portable.ps1 -Zip .\DSH-0.2.2-rc.2-win-arm64-portable-short-root.zip
 
 # 3) 在 ARM64 机器上验收：打印各原生模块的 PE 机器类型、Python 库导入、启动应用
 pwsh -File .\tools\check-on-arm64.ps1 -AppDir "D:\DSH-arm64"

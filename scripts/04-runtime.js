@@ -4,10 +4,10 @@ const path = require('path');
 const zlib = require('zlib');
 const crypto = require('crypto');
 
-const APP = 'C:/Users/87059/AppData/Local/Programs/DeepSeek Harness';
+const APP = 'D:/aiwork/DSHarm022/work/payload';
 const SRC = path.join(APP, 'resources/runtime');
-const DL = 'D:/aiwork/DSHarm/work/dl';
-const OUT = process.argv[2] || 'D:/aiwork/DSHarm/work/runtime-arm64';
+const DL = 'D:/aiwork/DSHarm022/work/dl';
+const OUT = process.argv[2] || 'D:/aiwork/DSHarm022/work/runtime-arm64';
 const log = (...a) => console.log(...a);
 
 // ---------- tar ----------

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const roots = [
   'C:/Users/87059/AppData/Local/Programs/DeepSeek Harness/resources/app.asar.unpacked',
-  'D:/aiwork/DSHarm/work/tree',
+  'D:/aiwork/DSHarm022/work/tree',
 ];
 const re = /(@koromix|sherpa-onnx-win|claude-agent-sdk-win|codex-win|ripgrep-win32|require-builtin-win32|libreoffice-kit-win32)/;
 function scan(root) {

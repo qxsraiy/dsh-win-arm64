@@ -2,10 +2,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const APP = 'C:/Users/87059/AppData/Local/Programs/DeepSeek Harness';
+const APP = 'D:/aiwork/DSHarm022/work/payload';
 const ASAR = path.join(APP, 'resources/app.asar');
 const UNPACKED = path.join(APP, 'resources/app.asar.unpacked');
-const OUT = 'D:/aiwork/DSHarm/work/tree';
+const OUT = 'D:/aiwork/DSHarm022/work/tree';
 
 function readHeader(file) {
   const fd = fs.openSync(file, 'r');
@@ -67,5 +67,5 @@ function copyUnpacked(dir, rel) {
 }
 copyUnpacked(path.join(UNPACKED, 'dsh'), 'dsh');
 console.log(`merged unpacked files: ${copied}, ${(copiedBytes / 1048576).toFixed(1)} MiB`);
-fs.writeFileSync('D:/aiwork/DSHarm/work/orig-unpacked.json', JSON.stringify([...unpackedSet].sort(), null, 0));
+fs.writeFileSync('D:/aiwork/DSHarm022/work/orig-unpacked.json', JSON.stringify([...unpackedSet].sort(), null, 0));
 console.log('wrote work/orig-unpacked.json');

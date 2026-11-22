@@ -1,13 +1,13 @@
-// 07-installer.js â€?generate and compile the NSIS installer for the arm64 app directory
+// 07-installer.js ï¿½?generate and compile the NSIS installer for the arm64 app directory
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-const APP = 'D:\\aiwork\\DSHarm\\work\\app-arm64';
-const NSIS = 'D:\\aiwork\\DSHarm\\work\\nsis\\nsis-3.11\\makensis.exe';
-const WORK = 'D:\\aiwork\\DSHarm\\work\\installer';
-const OUTDIR = 'D:\\aiwork\\DSHarm\\out';
-const NAME = 'DSH-0.2.1-fix11-win-arm64.exe';
+const APP = 'D:\\aiwork\\DSHarm022\\work\\app-arm64';
+const NSIS = 'D:\\aiwork\\DSHarm022\\work\\nsis\\nsis-3.11\\makensis.exe';
+const WORK = 'D:\\aiwork\\DSHarm022\\work\\installer';
+const OUTDIR = 'D:\\aiwork\\DSHarm022\\out';
+const NAME = 'DSH-0.2.2-rc.2-win-arm64.exe';
 const ICON = APP + '\\resources\\app-icon.ico';
 
 fs.mkdirSync(WORK, { recursive: true });
@@ -29,7 +29,7 @@ const L = [
   '!include "MUI2.nsh"',
   '',
   '!define APP_NAME "DeepSeek Harness"',
-  '!define APP_VERSION "0.2.1-alpha.1"',
+  '!define APP_VERSION "0.2.2-rc.2"',
   '!define APP_PUBLISHER "DeepSeek Harness"',
   '!define APP_EXE "DeepSeek Harness.exe"',
   '!define UNINST_KEY "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\DeepSeekHarness"',
@@ -45,7 +45,7 @@ const L = [
   'CRCCheck on',
   'XPStyle on',
   '',
-  'VIProductVersion "0.2.1.1"',
+  'VIProductVersion "0.2.2.2"',
   'VIAddVersionKey "ProductName" "${APP_NAME}"',
   'VIAddVersionKey "FileDescription" "${APP_NAME} installer (Windows ARM64)"',
   'VIAddVersionKey "FileVersion" "${APP_VERSION}"',

@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const bases = [
-  'D:/aiwork/DSHarm/work/asar/dsh/node_modules',
-  'D:/aiwork/DSHarm/work/asar/dsh/node_modules/@deepseek-ai/dsh-desktop-host/node_modules',
-  'D:/aiwork/DSHarm/work/asar/dsh/node_modules/@deepseek-ai/dsh-skill-office/node_modules',
+  'D:/aiwork/DSHarm022/work/asar/dsh/node_modules',
+  'D:/aiwork/DSHarm022/work/asar/dsh/node_modules/@deepseek-ai/dsh-desktop-host/node_modules',
+  'D:/aiwork/DSHarm022/work/asar/dsh/node_modules/@deepseek-ai/dsh-skill-office/node_modules',
 ];
 const want = ['koffi', '@koromix/koffi-win32-x64', '@coromix/koffi-win32-x64', '@deepseek-ai/libreoffice-kit', '@deepseek-ai/libreoffice-kit-win32-x64',
   'sherpa-onnx-node', 'sherpa-onnx-win-x64', 'node-pty', 'sharp', '@img/sharp-win32-x64', 'node-addon-require-builtin',

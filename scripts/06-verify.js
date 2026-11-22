@@ -1,9 +1,9 @@
-// 06-verify.js â€?structural verification of the arm64 build
+// 06-verify.js ï¿½?structural verification of the arm64 build
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const ROOT = process.argv[2] || 'D:/aiwork/DSHarm/work/app-arm64';
+const ROOT = process.argv[2] || 'D:/aiwork/DSHarm022/work/app-arm64';
 // x64 payload that is deliberately kept: it never gets loaded into the arm64 process
 const ALLOW_X64 = [
   'resources/elevate.exe',                       // electron-builder helper, spawned as a separate process
@@ -18,6 +18,12 @@ const ALLOW_X64 = [
   // upstream node-pty ships the conpty build catalogue; the arm64 build in prebuilds/win32-arm64 is what loads
   'resources/app.asar.unpacked/dsh/node_modules/node-pty/third_party/conpty/1.25.260303002/win10-x64/conpty.dll',
   'resources/app.asar.unpacked/dsh/node_modules/node-pty/third_party/conpty/1.25.260303002/win10-x64/OpenConsole.exe',
+  // libreoffice-kit's base package carries per-platform frame-forwarding prebuilds; the engine loads win32-arm64
+  'resources/app.asar.unpacked/dsh/node_modules/@deepseek-ai/libreoffice-kit/frame-forwarding/prebuilds/win32-x64/frame-forwarding.node',
+];
+// x64-looking paths inside the archive that are upstream multi-platform catalogues, not our loader target
+const ALLOW_X64_NAME = [
+  '/@deepseek-ai/libreoffice-kit/frame-forwarding/prebuilds/win32-x64/',
 ];
 const ALLOW_OTHER = [
   'resources/elevate.exe',
@@ -121,7 +127,8 @@ let x64NamedEntries = 0, missingUnpacked = 0;
       const p = prefix ? prefix + '/' + k : k;
       if (v.files) { walkNode(v, p); continue; }
       files++; if (v.unpacked) unpacked++;
-      if (/win32-x64|win-x64|win32_x64|x86_64-pc-windows/.test(p)) x64Names.push(p);
+      const nameCheck = p.split('darwin-x64').join('');   // "darwin-x64" would otherwise match "win-x64"
+      if (/win32-x64|win-x64|win32_x64|x86_64-pc-windows/.test(nameCheck) && !ALLOW_X64_NAME.some(a => ('/' + p).includes(a))) x64Names.push(p);
     }
   })(j, '');
   fs.closeSync(fd);

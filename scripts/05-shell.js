@@ -1,17 +1,19 @@
-// 05-shell.js — assemble the arm64 app directory (electron shell + resources)
+// 05-shell.js (0.2.2-rc.2) — assemble the arm64 app directory from the extracted payload
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const { execFileSync } = require('child_process');
 
-const DL = 'D:/aiwork/DSHarm/work/dl';
-const INST = 'C:/Users/87059/AppData/Local/Programs/DeepSeek Harness';
-const OUT = 'D:/aiwork/DSHarm/work/app-arm64';
-const ELECTRON = 'D:/aiwork/DSHarm/work/electron-arm64';
-const ASAR_OUT = 'D:/aiwork/DSHarm/work/out';
+const PAYLOAD = 'D:/aiwork/DSHarm022/work/payload';
+const ELECTRON = 'D:/aiwork/DSHarm022/work/electron-arm64';
+const ELECTRON_ZIP = 'D:/aiwork/DSHarm022/work/dl/electron-v44.7.0-win32-arm64.zip';
+const ASAR_OUT = 'D:/aiwork/DSHarm022/work/out';
+const RUNTIME = 'D:/aiwork/DSHarm022/work/runtime-arm64';
+const OUT = 'D:/aiwork/DSHarm022/work/app-arm64';
+const ICON = 'D:/aiwork/DSHarm022/work/app-icon.ico';
+const RCEDIT = 'D:/aiwork/DSHarm022/work/dl/rcedit-x64.exe';
 const log = (...a) => console.log(...a);
 
-// ---------- zip extractor ----------
 function extractZip(zipPath, dest) {
   const buf = fs.readFileSync(zipPath);
   let eocd = -1;
@@ -45,69 +47,77 @@ function extractZip(zipPath, dest) {
   return n;
 }
 
+// 1. electron arm64 dist
 if (!fs.existsSync(path.join(ELECTRON, 'electron.exe'))) {
   fs.rmSync(ELECTRON, { recursive: true, force: true });
   fs.mkdirSync(ELECTRON, { recursive: true });
-  const n = extractZip(path.join(DL, 'electron-v44.0.0-win32-arm64.zip'), ELECTRON);
-  log('electron zip extracted files:', n);
+  log('electron zip extracted files:', extractZip(ELECTRON_ZIP, ELECTRON));
 }
-log('electron dir:', fs.readdirSync(ELECTRON).join(', '));
 
-// ---------- assemble ----------
+// 2. payload -> app dir (keeps plugins-bundled, desktop.cordis.patch.yml, elevate.exe, icons ...)
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
-for (const e of fs.readdirSync(ELECTRON, { withFileTypes: true })) {
-  if (e.name === 'resources') { fs.mkdirSync(path.join(OUT, 'resources'), { recursive: true }); continue; }
-  if (e.name === 'electron.exe') continue;
-  fs.cpSync(path.join(ELECTRON, e.name), path.join(OUT, e.name), { recursive: true });
-}
-// resources from electron dist (default_app.asar etc.)
-for (const e of fs.readdirSync(path.join(ELECTRON, 'resources'), { withFileTypes: true })) {
-  fs.cpSync(path.join(ELECTRON, 'resources', e.name), path.join(OUT, 'resources', e.name), { recursive: true });
-}
-// app.asar + unpacked produced by the packer
-fs.copyFileSync(path.join(ASAR_OUT, 'app.asar'), path.join(OUT, 'resources/app.asar'));
-fs.cpSync(path.join(ASAR_OUT, 'app.asar.unpacked'), path.join(OUT, 'resources/app.asar.unpacked'), { recursive: true });
-// extra resources carried by the original build
-for (const f of ['icon.png', 'tray.ico', 'elevate.exe']) {
-  const src = path.join(INST, 'resources', f);
-  if (fs.existsSync(src)) fs.copyFileSync(src, path.join(OUT, 'resources', f));
-}
-// app icon used by the NSIS stage / window icon
-const iconSrc = path.join(INST, 'uninstallerIcon.ico');
-if (fs.existsSync(iconSrc)) fs.copyFileSync(iconSrc, path.join(OUT, 'resources/app-icon.ico'));
+log('copying payload ...');
+fs.cpSync(PAYLOAD, OUT, { recursive: true });
 
-// arm64 runtime payload prepared by 04-runtime.js
-const RUNTIME = 'D:/aiwork/DSHarm/work/runtime-arm64';
+// 3. overlay the arm64 shell over it
+let overlaid = 0;
+for (const e of fs.readdirSync(ELECTRON, { withFileTypes: true })) {
+  if (e.name === 'electron.exe') continue;
+  if (e.name === 'LICENSE') { fs.copyFileSync(path.join(ELECTRON, 'LICENSE'), path.join(OUT, 'LICENSE.electron.txt')); overlaid++; continue; }
+  if (e.name === 'resources') {
+    for (const r of fs.readdirSync(path.join(ELECTRON, 'resources'), { withFileTypes: true })) {
+      const src = path.join(ELECTRON, 'resources', r.name);
+      const dst = path.join(OUT, 'resources', r.name);
+      fs.rmSync(dst, { recursive: true, force: true });
+      fs.cpSync(src, dst, { recursive: true });
+      overlaid++;
+    }
+    continue;
+  }
+  const dst = path.join(OUT, e.name);
+  fs.rmSync(dst, { recursive: true, force: true });
+  fs.cpSync(path.join(ELECTRON, e.name), dst, { recursive: true });
+  overlaid++;
+}
+log('overlaid shell entries:', overlaid);
+
+// 4. our repacked asar + runtime payload
+fs.rmSync(path.join(OUT, 'resources/app.asar'), { force: true });
+fs.copyFileSync(path.join(ASAR_OUT, 'app.asar'), path.join(OUT, 'resources/app.asar'));
+fs.rmSync(path.join(OUT, 'resources/app.asar.unpacked'), { recursive: true, force: true });
+fs.cpSync(path.join(ASAR_OUT, 'app.asar.unpacked'), path.join(OUT, 'resources/app.asar.unpacked'), { recursive: true });
+fs.rmSync(path.join(OUT, 'resources/runtime'), { recursive: true, force: true });
 if (!fs.existsSync(RUNTIME)) throw new Error('runtime payload missing: run 04-runtime.js first');
 fs.cpSync(RUNTIME, path.join(OUT, 'resources/runtime'), { recursive: true });
-log('runtime payload copied:', fs.readdirSync(path.join(OUT, 'resources/runtime')).join(', '));
+log('resources now:', fs.readdirSync(path.join(OUT, 'resources')).join(', '));
 
-// ---------- exe ----------
-const exeSrc = path.join(ELECTRON, 'electron.exe');
+// 5. launcher exe: rename + version resources + original icon
 const exeOut = path.join(OUT, 'DeepSeek Harness.exe');
-fs.copyFileSync(exeSrc, exeOut);
-const rcedit = path.join(DL, 'rcedit-x64.exe');
-const icon = fs.existsSync(path.join(INST, 'uninstallerIcon.ico')) ? path.join(INST, 'uninstallerIcon.ico') : null;
+fs.copyFileSync(path.join(ELECTRON, 'electron.exe'), exeOut);
 const args = [
   exeOut,
   '--set-version-string', 'ProductName', 'DeepSeek Harness',
   '--set-version-string', 'FileDescription', 'Electron desktop shell for a bundled dsh runtime and external plugins',
   '--set-version-string', 'LegalCopyright', 'Copyright © 2026 DeepSeek Harness',
-  '--set-version-string', 'CompanyName', '',
-  '--set-file-version', '0.2.1.1',
-  '--set-product-version', '0.2.1.1',
+  '--set-version-string', 'CompanyName', 'Hangzhou DeepSeek Artificial Intelligence Co., Ltd.',
+  '--set-file-version', '0.2.2.2',
+  '--set-product-version', '0.2.2.2',
 ];
-if (icon) args.push('--set-icon', icon);
+if (fs.existsSync(ICON)) args.push('--set-icon', ICON);
 try {
-  execFileSync(rcedit, args, { stdio: 'inherit' });
-  log('rcedit patched version info' + (icon ? ' + icon' : ''));
+  execFileSync(RCEDIT, args, { stdio: 'inherit' });
+  log('rcedit patched version info' + (fs.existsSync(ICON) ? ' + icon' : ''));
 } catch (e) {
   log('rcedit FAILED:', e.message);
 }
-// electron-builder naming parity: electron LICENSE becomes LICENSE.electron.txt
-{
-  const lic = path.join(OUT, 'LICENSE');
-  if (fs.existsSync(lic)) fs.renameSync(lic, path.join(OUT, 'LICENSE.electron.txt'));
-}
+
+// 6. stale x64 shell files (present in payload, absent from the arm64 dist) are reported, not deleted
+const distNames = new Set(fs.readdirSync(ELECTRON));
+const stale = fs.readdirSync(OUT).filter(n => {
+  if (distNames.has(n)) return false;
+  const st = fs.statSync(path.join(OUT, n));
+  return st.isFile() && /\.(exe|dll|pak|dat|bin|json)$/i.test(n);
+});
+log('payload-only shell files kept:', stale.length ? stale.join(', ') : 'none');
 log('assembled', OUT);

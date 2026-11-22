@@ -1,7 +1,7 @@
 // inspect interop packages: names, versions, optionalDependencies, loader hints
 const fs = require('fs');
 const path = require('path');
-const root = 'D:/aiwork/DSHarm/work/asar/dsh/node_modules';
+const root = 'D:/aiwork/DSHarm022/work/asar/dsh/node_modules';
 const pkgs = ['koffi', 'sharp', 'node-pty', 'sherpa-onnx-node', 'node-addon-require-builtin',
   '@vscode/ripgrep', '@openai/codex', '@anthropic-ai/claude-agent-sdk', '@deepseek-ai/libreoffice-kit',
   '@img/sharp-win32-x64', '@koromix/koffi-win32-x64', 'sherpa-onnx-win-x64', 'node-addon-require-builtin-win32-x64-msvc'];

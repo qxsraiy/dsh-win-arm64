@@ -4,7 +4,7 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 
-const OUT = 'D:/aiwork/DSHarm/work/dl';
+const OUT = 'D:/aiwork/DSHarm022/work/dl';
 fs.mkdirSync(OUT, { recursive: true });
 
 const get = (url, headers = {}) => new Promise((resolve, reject) => {
