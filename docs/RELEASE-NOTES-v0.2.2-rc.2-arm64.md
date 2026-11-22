@@ -11,8 +11,8 @@
 | `SHA256SUMS.txt` | 校验和，先核对再解压 |
 
 ```
-b1ab63c90cf47dcb681063cecc9f6445375e65736cb5aaf180dfe79b7489bc8a  DSH-0.2.2-rc.2-win-arm64.exe
-8118a0fc0e713070ecf41ab0311a3c26732e058957497826bb12bcccf8d53dde  DSH-0.2.2-rc.2-win-arm64-portable-short-root.zip
+b0cb85bec90ad7afd44a64c99381e649c890a0029dd18fc4081975dd5da90ae3  DSH-0.2.2-rc.2-win-arm64.exe
+eb4a8beb4c2315bdb7742a3e98ddc8e9d30611b9125ea8bb0024203cae06888c  DSH-0.2.2-rc.2-win-arm64-portable-short-root.zip
 ```
 
 安装器 stub 为 32 位 x86（NSIS 默认），在 ARM64 Windows 上由系统模拟执行；**装进去的程序本体是 arm64**。包未签名。
@@ -23,7 +23,9 @@ b1ab63c90cf47dcb681063cecc9f6445375e65736cb5aaf180dfe79b7489bc8a  DSH-0.2.2-rc.2
 - **原生模块**：koffi 3.1.1、sharp+libvips 0.35.5、node-pty `prebuilds/win32-arm64`、ripgrep 1.18.0、sherpa-onnx 1.13.8、libreoffice-kit 0.2.3（`bin/dsoffice.exe`）、node-addon-require-builtin 0.1.9 —— 全部 arm64
 - **运行时负载**：Node 24.21.0 win-arm64；CPython 3.12.16 arm64 + 13 个 `win_arm64`/`none-any` 轮子；pnpm 11.28.5 并补齐 **`@reflink/reflink-win32-arm64-msvc`**（否则 pnpm 会静默降级为普通复制）
 - **打包层**：`app.asar` 重新打包（20 184 条目 / 1 696 unpacked / 205.3 MiB，含 4 MiB 分块 SHA-256 integrity）；`runtime.json` 与 `desktop-runtime.json` 的 `arch` 改 arm64，文件清单重算（18 997 条）
-- **1 处 JS 补丁**：`dsh-experimental-speech-to-text-sensevoice` 平台白名单补 `win32-arm64`
+- **2 处 JS 补丁**：
+  - ① `dsh-experimental-speech-to-text-sensevoice` 平台白名单补 `win32-arm64`
+  - ② 桌面壳强制更新身份校验：`identity.platform === "win32" && identity.arch !== "x64"` 会直接抛 `desktop policy: invalid installed client identity`，arm64 上窗口都开不了；已放开为接受 `x64` / `arm64`（0.2.2 新增的硬闸，全库只此一处）
 
 与 0.2.1-fix11 相比：本版**不再捆绑** `claude.exe` / `codex.exe`（省掉 439 MiB），新增 `resources/plugins-bundled/` 与 `resources/desktop.cordis.patch.yml` gate 层（原样保留，未改动）。
 

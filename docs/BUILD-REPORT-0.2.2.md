@@ -42,7 +42,8 @@
 | `app.asar` | 含 x64 原生条目 | **重新打包**：20 184 条目 / 1 696 unpacked / 205.3 MiB |
 | `runtime.json` | `arch: x64`, python 3.12.14, pnpm 11.28.5 | `arch: arm64`, python 3.12.16, node 24.21.0（pnpm 保持 11.28.5） |
 | `desktop-runtime.json` | `arch: x64`，18 994 条文件清单 | `arch: arm64`，清单重算 **18 997** 条 |
-| 语音 Provider 白名单 | 只列 `win32-x64` | 追加 `win32-arm64`（1 处 JS 补丁，同上次） |
+| 语音 Provider 白名单 | 只列 `win32-x64` | 追加 `win32-arm64`（JS 补丁 ①，同上次） |
+| 桌面壳的强制更新身份校验 | `win32 && arch !== "x64"` 直接抛错 | 放开为 `win32 && !["x64","arm64"].includes(arch)`（JS 补丁 ②，**0.2.2 新增的硬闸**，不改则应用启动即报 `desktop policy: invalid installed client identity`） |
 
 允许保留的非 arm64（都不在 Electron 进程内加载）：
 
@@ -53,6 +54,11 @@
 ---
 
 ## 3. 校验
+
+> **0.2.2 的新坑**：`lib/main.js` 的 `DesktopMandatoryUpdatePolicy` 构造函数里有一条
+> `identity.platform === "win32" && identity.arch !== "x64"` → `throw "desktop policy: invalid installed client identity"`。
+> arm64 上窗口还没开就会抛，属于必须改的语义闸（`02e-patch-shell.js` 已放开为 x64/arm64 都接受）。
+> 全库只此一处，`@deepseek-ai/*` 里没有同类判断。
 
 **`06-verify.js`（全量 PE 普查）**
 
@@ -72,8 +78,8 @@ asar: 20 184 条目, 1 696 unpacked, 205.3 MiB；x64 命名残留 0；unpacked �
 **产物哈希**
 
 ```
-b1ab63c90cf47dcb681063cecc9f6445375e65736cb5aaf180dfe79b7489bc8a  DSH-0.2.2-rc.2-win-arm64.exe                    242.5 MiB
-8118a0fc0e713070ecf41ab0311a3c26732e058957497826bb12bcccf8d53dde  DSH-0.2.2-rc.2-win-arm64-portable-short-root.zip  402.6 MiB
+b0cb85bec90ad7afd44a64c99381e649c890a0029dd18fc4081975dd5da90ae3  DSH-0.2.2-rc.2-win-arm64.exe                    242.5 MiB
+eb4a8beb4c2315bdb7742a3e98ddc8e9d30611b9125ea8bb0024203cae06888c  DSH-0.2.2-rc.2-win-arm64-portable-short-root.zip  402.6 MiB
 ```
 
 ---

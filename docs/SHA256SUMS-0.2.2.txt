@@ -1,2 +1,2 @@
-8118a0fc0e713070ecf41ab0311a3c26732e058957497826bb12bcccf8d53dde  DSH-0.2.2-rc.2-win-arm64-portable-short-root.zip
-b1ab63c90cf47dcb681063cecc9f6445375e65736cb5aaf180dfe79b7489bc8a  DSH-0.2.2-rc.2-win-arm64.exe
+eb4a8beb4c2315bdb7742a3e98ddc8e9d30611b9125ea8bb0024203cae06888c  DSH-0.2.2-rc.2-win-arm64-portable-short-root.zip
+b0cb85bec90ad7afd44a64c99381e649c890a0029dd18fc4081975dd5da90ae3  DSH-0.2.2-rc.2-win-arm64.exe
